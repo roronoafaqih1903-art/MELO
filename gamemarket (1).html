@@ -1,0 +1,2765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ItemZone — Marketplace Item Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #6C3FE8;
+    --primary-dark: #5530C7;
+    --primary-light: #EDE8FF;
+    --accent: #FF6B35;
+    --accent-light: #FFF0EB;
+    --gold: #F5A623;
+    --success: #22C55E;
+    --danger: #EF4444;
+    --bg: #0D0F1A;
+    --bg2: #161829;
+    --bg3: #1E2138;
+    --bg4: #252844;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #F0F2FF;
+    --text2: #9DA3C4;
+    --text3: #6B7299;
+    --card-bg: #161829;
+    --card-border: rgba(108,63,232,0.2);
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===================== NAV ===================== */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(13,15,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo span { color: var(--primary); }
+  .logo-badge {
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .nav-search {
+    flex: 1;
+    max-width: 420px;
+    position: relative;
+  }
+  .nav-search input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 16px 9px 42px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .nav-search input:focus { outline: none; border-color: var(--primary); }
+  .nav-search input::placeholder { color: var(--text3); }
+  .nav-search .si {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 17px;
+  }
+  .nav-links { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 8px 16px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--primary); color: var(--text); }
+  .nav-btn.primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+  .nav-btn.primary:hover { background: var(--primary-dark); }
+  .cart-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .cart-btn:hover { border-color: var(--primary); }
+  .cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===================== PAGE ROUTING ===================== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: linear-gradient(135deg, #0D0F1A 0%, #1A1240 50%, #0D0F1A 100%);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,63,232,0.15) 0%, transparent 70%);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.3px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -1.5px;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+  .hero h1 span { color: var(--primary); }
+  .hero p {
+    font-size: 17px;
+    color: var(--text2);
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-hero {
+    padding: 13px 28px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-hero.main { background: var(--primary); color: #fff; }
+  .btn-hero.main:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-hero.outline { background: transparent; color: var(--text); border: 1.5px solid var(--border2); }
+  .btn-hero.outline:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* ===================== STATS BAR ===================== */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 900; color: var(--text); }
+  .stat-num span { color: var(--primary); }
+  .stat-label { font-size: 12px; color: var(--text3); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
+
+  /* ===================== SECTION ===================== */
+  .section { padding: 2.5rem 2rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .section-title span { color: var(--primary); }
+  .see-all {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .see-all:hover { text-decoration: underline; }
+
+  /* ===================== GAME CATEGORIES ===================== */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .cat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .cat-card:hover { border-color: var(--primary); background: var(--bg4); transform: translateY(-2px); }
+  .cat-card.active { border-color: var(--primary); background: rgba(108,63,232,0.12); }
+  .cat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .cat-name { font-size: 13px; font-weight: 700; color: var(--text); }
+  .cat-count { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+  /* ===================== ITEM CARDS ===================== */
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+  }
+  .item-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .item-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(108,63,232,0.15); }
+  .item-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+  }
+  .item-body { padding: 14px; }
+  .item-game-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 3px 9px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .item-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.35; }
+  .item-seller {
+    font-size: 12px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .seller-badge { color: var(--gold); font-size: 13px; }
+  .item-footer { display: flex; align-items: center; justify-content: space-between; }
+  .item-price { font-size: 16px; font-weight: 900; color: var(--text); }
+  .item-price .currency { font-size: 11px; font-weight: 700; color: var(--text3); }
+  .item-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 600;
+  }
+  .star { color: var(--gold); font-size: 13px; }
+  .item-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .badge-hot { background: #FF3B3B; color: #fff; }
+  .badge-new { background: var(--primary); color: #fff; }
+  .badge-sale { background: var(--gold); color: #fff; }
+  .wishlist-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(13,15,26,0.7);
+    border: none;
+    color: var(--text2);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .wishlist-btn.active, .wishlist-btn:hover { color: #FF3B3B; background: rgba(255,59,59,0.15); }
+
+  /* ===================== FILTERS ===================== */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .filter-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 7px 16px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(108,63,232,0.08);
+  }
+  .filter-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 7px 16px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .filter-select:focus { outline: none; border-color: var(--primary); }
+
+  /* ===================== SELLER PROFILE ===================== */
+  .seller-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .seller-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #9B6EFF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .seller-info { flex: 1; }
+  .seller-name { font-size: 18px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .verified { color: var(--primary); font-size: 16px; }
+  .seller-stats { display: flex; gap: 1.5rem; margin-top: 8px; flex-wrap: wrap; }
+  .seller-stat { text-align: center; }
+  .seller-stat-num { font-size: 18px; font-weight: 800; color: var(--text); }
+  .seller-stat-label { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+  /* ===================== PRODUCT DETAIL ===================== */
+  .product-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .product-img-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    margin-bottom: 1rem;
+  }
+  .product-title { font-size: 26px; font-weight: 900; color: var(--text); margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+  .product-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .reviews-count { color: var(--text3); font-size: 13px; font-weight: 600; }
+  .product-desc { color: var(--text2); font-size: 15px; line-height: 1.7; margin-bottom: 1.5rem; }
+  .product-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .tag {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 5px 13px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .buy-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    position: sticky;
+    top: 80px;
+  }
+  .buy-price { font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 0.25rem; }
+  .buy-price .cur { font-size: 16px; color: var(--text3); }
+  .buy-original { font-size: 14px; color: var(--text3); text-decoration: line-through; margin-bottom: 1rem; }
+  .buy-discount {
+    display: inline-flex;
+    background: rgba(239,68,68,0.15);
+    color: #EF4444;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    margin-left: 8px;
+  }
+  .btn-buy {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-buy:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-buy.secondary {
+    background: transparent;
+    border: 1.5px solid var(--border2);
+    color: var(--text);
+  }
+  .btn-buy.secondary:hover { border-color: var(--primary); color: var(--primary); }
+  .buy-safety {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text3);
+    font-weight: 600;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .buy-safety i { color: var(--success); font-size: 14px; }
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .qty-label { font-size: 14px; font-weight: 700; color: var(--text2); }
+  .qty-box {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .qty-btn {
+    background: var(--bg3);
+    border: none;
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    transition: background 0.2s;
+  }
+  .qty-btn:hover { background: var(--bg4); }
+  .qty-num {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    width: 46px;
+    height: 36px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  /* ===================== CHAT / ORDER ===================== */
+  .chat-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .chat-header {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chat-messages {
+    height: 380px;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+  .msg { max-width: 75%; }
+  .msg.mine { align-self: flex-end; }
+  .msg.theirs { align-self: flex-start; }
+  .msg-bubble {
+    padding: 10px 15px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .msg.mine .msg-bubble { background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.theirs .msg-bubble { background: var(--bg4); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 11px; color: var(--text3); margin-top: 4px; font-weight: 500; }
+  .msg.mine .msg-time { text-align: right; }
+  .chat-input {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+  }
+  .chat-input input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+  }
+  .chat-input input:focus { outline: none; border-color: var(--primary); }
+  .chat-send {
+    background: var(--primary);
+    border: none;
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+  }
+  .chat-send:hover { background: var(--primary-dark); }
+
+  /* ===================== SELL / DASHBOARD ===================== */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 13px; font-weight: 700; color: var(--text2); }
+  .form-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { outline: none; border-color: var(--primary); }
+  .form-input::placeholder { color: var(--text3); }
+  .form-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    appearance: none;
+    cursor: pointer;
+  }
+  .form-select:focus { outline: none; border-color: var(--primary); }
+  .form-textarea {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 100px;
+  }
+  .form-textarea:focus { outline: none; border-color: var(--primary); }
+  .upload-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text3);
+    font-weight: 600;
+  }
+  .upload-zone:hover { border-color: var(--primary); color: var(--primary); background: rgba(108,63,232,0.04); }
+  .upload-zone i { font-size: 32px; display: block; margin-bottom: 8px; }
+
+  /* ===================== ORDERS ===================== */
+  .order-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    transition: border-color 0.2s;
+  }
+  .order-item:hover { border-color: var(--primary); }
+  .order-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .order-info { flex: 1; }
+  .order-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .order-meta { font-size: 13px; color: var(--text3); font-weight: 500; }
+  .order-price { font-size: 17px; font-weight: 900; color: var(--text); text-align: right; }
+  .order-status {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .status-pending { background: rgba(245,166,35,0.15); color: var(--gold); }
+  .status-success { background: rgba(34,197,94,0.15); color: var(--success); }
+  .status-process { background: rgba(108,63,232,0.15); color: var(--primary); }
+
+  /* ===================== MODAL ===================== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 460px;
+    padding: 2rem;
+    position: relative;
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--bg3);
+    border: none;
+    color: var(--text2);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal h2 { font-size: 22px; font-weight: 900; margin-bottom: 0.5rem; }
+  .modal p { color: var(--text2); font-size: 14px; margin-bottom: 1.5rem; line-height: 1.6; }
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text3);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+  }
+  .tab.active { background: var(--primary); color: #fff; }
+
+  /* ===================== WALLET ===================== */
+  .wallet-card {
+    background: linear-gradient(135deg, var(--primary) 0%, #9B6EFF 100%);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .wallet-card::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    top: -150px;
+    right: -80px;
+  }
+  .wallet-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .wallet-balance { font-size: 40px; font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 1.5rem; }
+  .wallet-actions { display: flex; gap: 10px; }
+  .wallet-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .wallet-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* ===================== NOTIFICATIONS ===================== */
+  .notif {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .notif-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .notif-text { flex: 1; }
+  .notif-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .notif-desc { font-size: 13px; color: var(--text3); font-weight: 500; }
+  .notif-time { font-size: 11px; color: var(--text3); white-space: nowrap; font-weight: 500; }
+  .notif.unread { background: rgba(108,63,232,0.04); border-radius: var(--radius); padding: 1rem; margin-bottom: 2px; }
+
+  /* ===================== BOTTOM NAV ===================== */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 900;
+  }
+  .bnav-items { display: flex; justify-content: space-around; }
+  .bnav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text3);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .bnav-item i { font-size: 22px; }
+  .bnav-item.active { color: var(--primary); }
+
+  /* ===================== TOAST ===================== */
+  .toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
+    backdrop-filter: blur(8px);
+  }
+  .toast.success i { color: var(--success); }
+  .toast.error i { color: var(--danger); }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(10px); } }
+
+  /* ===================== MISC ===================== */
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+  .page-title { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; padding: 2rem 2rem 0; }
+  .page-subtitle { font-size: 15px; color: var(--text3); padding: 0.5rem 2rem 1.5rem; font-weight: 500; }
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text3);
+  }
+  .empty-state i { font-size: 56px; display: block; margin-bottom: 1rem; }
+  .empty-state h3 { font-size: 18px; font-weight: 800; color: var(--text2); margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 14px; }
+  .flex-gap { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .rating-stars { display: flex; gap: 4px; color: var(--text3); font-size: 22px; cursor: pointer; }
+  .review-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 12px;
+  }
+  .review-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .review-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--primary);
+  }
+  .review-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .review-date { font-size: 12px; color: var(--text3); font-weight: 500; }
+  .review-text { font-size: 14px; color: var(--text2); line-height: 1.6; font-weight: 500; }
+
+  /* ===================== PAYMENT PAGE ===================== */
+  .payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 2rem;
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .pay-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .pay-section-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pay-section-title i { color: var(--primary); font-size: 18px; }
+  .pay-step-badge {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Method cards */
+  .pay-method-group { margin-bottom: 1.25rem; }
+  .pay-method-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text3);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .pay-methods { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .pay-method {
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+  }
+  .pay-method:hover { border-color: var(--primary); background: var(--bg4); }
+  .pay-method.selected { border-color: var(--primary); background: rgba(108,63,232,0.1); }
+  .pay-method.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--primary);
+  }
+  .pay-method-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .pay-method-name { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .pay-method-desc { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 1px; }
+
+  /* Virtual Account detail */
+  .va-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: none;
+  }
+  .va-box.show { display: block; }
+  .va-bank-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .va-bank-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+  }
+  .va-number-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .va-number {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: 3px;
+  }
+  .copy-btn {
+    background: var(--primary);
+    border: none;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: var(--primary-dark); }
+  .va-expire {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--danger);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+  .va-steps { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .va-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .va-step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* QRIS */
+  .qris-box {
+    display: none;
+    text-align: center;
+  }
+  .qris-box.show { display: block; }
+  .qris-img {
+    width: 200px; height: 200px;
+    border-radius: 16px;
+    background: #fff;
+    margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .qris-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    padding: 12px;
+    width: 100%; height: 100%;
+  }
+  .qris-cell {
+    border-radius: 1px;
+    background: #000;
+  }
+
+  /* Credit Card */
+  .card-form { display: none; }
+  .card-form.show { display: block; }
+  .card-preview {
+    background: linear-gradient(135deg, var(--primary) 0%, #9B6EFF 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-preview::before {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    top: -80px; right: -50px;
+  }
+  .card-chip {
+    width: 36px; height: 28px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+  }
+  .card-number-preview {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+    font-family: monospace;
+  }
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .card-label { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  .card-val { font-size: 14px; font-weight: 700; color: #fff; }
+
+  /* COD/Balance */
+  .balance-box { display: none; }
+  .balance-box.show { display: block; }
+
+  /* Order Summary sidebar */
+  .order-summary-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    position: sticky;
+    top: 80px;
+  }
+  .summary-items { margin-bottom: 1.25rem; }
+  .summary-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-item-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .summary-item-name { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; line-height: 1.4; }
+  .summary-item-game { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+  .summary-item-price { font-size: 14px; font-weight: 800; color: var(--text); white-space: nowrap; }
+  .summary-rows { margin-bottom: 1rem; }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    padding: 5px 0;
+  }
+  .summary-row.total {
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+  .summary-row.discount { color: var(--success); }
+  .summary-row.free { color: var(--success); }
+
+  /* Timer countdown */
+  .pay-timer {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .pay-timer i { color: var(--danger); font-size: 20px; flex-shrink: 0; }
+  .pay-timer-label { font-size: 12px; font-weight: 700; color: var(--text3); }
+  .pay-timer-count { font-size: 22px; font-weight: 900; color: var(--danger); font-family: monospace; }
+
+  /* Payment success */
+  .pay-success {
+    display: none;
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+  .pay-success.show { display: block; }
+  .success-anim {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.15);
+    border: 2px solid var(--success);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 44px;
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .success-title { font-size: 26px; font-weight: 900; color: var(--text); margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+  .success-sub { font-size: 15px; color: var(--text2); margin-bottom: 2rem; line-height: 1.6; font-weight: 500; }
+  .success-order-id {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 2rem;
+  }
+  .success-id-label { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 0.5px; text-transform: uppercase; }
+  .success-id-val { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
+
+  @media (max-width: 768px) {
+    .payment-layout { grid-template-columns: 1fr; padding: 1.25rem; }
+  }
+
+  /* ===================== END PAYMENT ===================== */
+
+  @media (max-width: 768px) {
+    .navbar { padding: 0 1rem; gap: 0.75rem; }
+    .nav-search { max-width: 160px; }
+    .hero { padding: 2.5rem 1.25rem 2rem; }
+    .stats-bar { gap: 1.5rem; }
+    .section { padding: 1.75rem 1.25rem; }
+    .items-grid { grid-template-columns: repeat(2, 1fr); }
+    .category-grid { grid-template-columns: repeat(3, 1fr); }
+    .product-layout { grid-template-columns: 1fr; padding: 1.25rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    .bottom-nav { display: block; }
+    body { padding-bottom: 70px; }
+    .page-title { font-size: 20px; }
+  }
+
+  /* ===================== DASHBOARD TABS ===================== */
+  .dash-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 2rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .dash-tab {
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text3);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .dash-tab:hover { color: var(--text); }
+  .dash-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .dash-panel { display: none; padding: 1.5rem 2rem; }
+  .dash-panel.active { display: block; }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 2rem;
+  }
+  .metric {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+  }
+  .metric-label { font-size: 12px; font-weight: 700; color: var(--text3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .metric-value { font-size: 26px; font-weight: 900; color: var(--text); }
+  .metric-change { font-size: 12px; font-weight: 700; margin-top: 4px; }
+  .metric-change.up { color: var(--success); }
+  .metric-change.down { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ NAVBAR -->
+<nav class="navbar">
+  <a class="logo" href="#" onclick="showPage('home')">
+    Item<span>Zone</span>
+    <span class="logo-badge">PRO</span>
+  </a>
+  <div class="nav-search">
+    <i class="ti ti-search si"></i>
+    <input type="text" placeholder="Cari item, hero, skin..." onkeydown="if(event.key==='Enter')showPage('browse')">
+  </div>
+  <div class="nav-links">
+    <button class="cart-btn" onclick="showPage('cart')" aria-label="Keranjang">
+      <i class="ti ti-shopping-cart" style="font-size:18px"></i>
+      <span class="cart-badge" id="cart-count">3</span>
+    </button>
+    <button class="nav-btn" onclick="showModal('notif-modal')"><i class="ti ti-bell" style="font-size:16px"></i></button>
+    <button class="nav-btn" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-btn primary" onclick="showModal('login-modal')">Masuk</button>
+  </div>
+</nav>
+
+<!-- ============================================================ TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ============================================================ HOME PAGE -->
+<div id="page-home" class="page active">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag"><i class="ti ti-shield-check" style="font-size:12px"></i> 100% AMAN & TERPERCAYA</div>
+    <h1>Marketplace Item Game<br><span>Terbesar di Indonesia</span></h1>
+    <p>Beli & jual item, akun, skin, top-up, dan boosting dari ratusan game populer. Transaksi aman, pengiriman instan.</p>
+    <div class="hero-btns">
+      <button class="btn-hero main" onclick="showPage('browse')"><i class="ti ti-bolt"></i> Belanja Sekarang</button>
+      <button class="btn-hero outline" onclick="showPage('sell')"><i class="ti ti-plus"></i> Jual Item</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num">2.4<span>JT+</span></div>
+      <div class="stat-label">Total Transaksi</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">180<span>K+</span></div>
+      <div class="stat-label">Seller Aktif</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">50<span>+</span></div>
+      <div class="stat-label">Game Tersedia</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4.9<span>★</span></div>
+      <div class="stat-label">Rating Platform</div>
+    </div>
+  </div>
+
+  <!-- Kategori Game -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎮 Kategori <span>Game</span></div>
+      <button class="see-all" onclick="showPage('browse')">Lihat Semua <i class="ti ti-chevron-right" style="font-size:12px"></i></button>
+    </div>
+    <div class="category-grid" id="cat-grid"></div>
+  </div>
+
+  <!-- Item Populer -->
+  <div class="section" style="background: var(--bg2); border-radius: 0;">
+    <div class="section-header">
+      <div class="section-title">🔥 Item <span>Terlaris</span></div>
+      <button class="see-all" onclick="showPage('browse')">Lihat Semua <i class="ti ti-chevron-right" style="font-size:12px"></i></button>
+    </div>
+    <div class="items-grid" id="hot-items"></div>
+  </div>
+
+  <!-- Banner Promo -->
+  <div class="section">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="background:linear-gradient(135deg,#1A1240,#2D1B69);border:1px solid rgba(108,63,232,0.3);border-radius:var(--radius-xl);padding:1.75rem;cursor:pointer;transition:all 0.2s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''">
+        <div style="font-size:11px;font-weight:700;color:var(--primary);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">PROGRAM SELLER</div>
+        <div style="font-size:19px;font-weight:900;color:var(--text);margin-bottom:8px;letter-spacing:-0.3px">Komisi 0% untuk<br>Seller Baru!</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:1rem;font-weight:500">Gratis komisi 30 hari pertama untuk semua seller yang baru bergabung.</div>
+        <button class="btn-hero main" style="padding:9px 18px;font-size:13px" onclick="showPage('sell')">Mulai Jual</button>
+      </div>
+      <div style="background:linear-gradient(135deg,#1A0D00,#2D1A00);border:1px solid rgba(245,166,35,0.3);border-radius:var(--radius-xl);padding:1.75rem;cursor:pointer;transition:all 0.2s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''">
+        <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">TOP UP TERLENGKAP</div>
+        <div style="font-size:19px;font-weight:900;color:var(--text);margin-bottom:8px;letter-spacing:-0.3px">Top-Up Lebih Murah<br>Sampai 30%!</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:1rem;font-weight:500">Diamonds, UC, VP, dan koin game populer dengan harga terbaik.</div>
+        <button class="btn-hero outline" style="padding:9px 18px;font-size:13px">Top Up Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seller Terbaik -->
+  <div class="section" style="background: var(--bg2);">
+    <div class="section-header">
+      <div class="section-title">⭐ Top <span>Seller</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px" id="top-sellers"></div>
+  </div>
+</div>
+
+<!-- ============================================================ BROWSE PAGE -->
+<div id="page-browse" class="page">
+  <div class="page-title">🛒 Semua Item</div>
+  <div class="page-subtitle">Temukan item terbaik dari ratusan game populer</div>
+  <div class="section" style="padding-top: 0">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter(this,'Semua')">Semua</button>
+      <button class="filter-btn" onclick="setFilter(this,'Mobile Legends')">Mobile Legends</button>
+      <button class="filter-btn" onclick="setFilter(this,'PUBG Mobile')">PUBG Mobile</button>
+      <button class="filter-btn" onclick="setFilter(this,'Free Fire')">Free Fire</button>
+      <button class="filter-btn" onclick="setFilter(this,'Genshin Impact')">Genshin Impact</button>
+      <select class="filter-select" onchange="sortItems(this.value)">
+        <option value="popular">Terpopuler</option>
+        <option value="cheap">Termurah</option>
+        <option value="expensive">Termahal</option>
+        <option value="newest">Terbaru</option>
+      </select>
+    </div>
+    <div class="items-grid" id="all-items"></div>
+  </div>
+</div>
+
+<!-- ============================================================ PRODUCT DETAIL PAGE -->
+<div id="page-product" class="page">
+  <div class="product-layout">
+    <div>
+      <div class="product-img-box" id="pd-img">🗡️</div>
+      <div class="product-title" id="pd-title">Loading...</div>
+      <div class="product-meta">
+        <div class="item-rating">
+          <i class="ti ti-star-filled star"></i>
+          <span id="pd-rating">4.9</span>
+        </div>
+        <span class="reviews-count" id="pd-reviews">(234 ulasan)</span>
+        <span class="item-game-tag" id="pd-game">Mobile Legends</span>
+      </div>
+      <div class="product-desc" id="pd-desc">Deskripsi produk...</div>
+      <div class="product-tags" id="pd-tags"></div>
+      
+      <!-- Seller -->
+      <div class="seller-card">
+        <div class="seller-avatar" id="pd-seller-avatar">JK</div>
+        <div class="seller-info">
+          <div class="seller-name" id="pd-seller-name">
+            JualKuy Official
+            <i class="ti ti-badge-check verified"></i>
+          </div>
+          <div class="seller-stats">
+            <div class="seller-stat">
+              <div class="seller-stat-num">4.9</div>
+              <div class="seller-stat-label">Rating</div>
+            </div>
+            <div class="seller-stat">
+              <div class="seller-stat-num">2.4K</div>
+              <div class="seller-stat-label">Terjual</div>
+            </div>
+            <div class="seller-stat">
+              <div class="seller-stat-num">2 thn</div>
+              <div class="seller-stat-label">Bergabung</div>
+            </div>
+          </div>
+        </div>
+        <button class="nav-btn" onclick="showPage('chat')"><i class="ti ti-message-circle" style="font-size:16px"></i> Chat</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Reviews -->
+      <div class="section-title" style="margin-bottom:1rem">Ulasan Pembeli</div>
+      <div id="pd-reviews-list"></div>
+    </div>
+
+    <!-- Buy Card -->
+    <div>
+      <div class="buy-card">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div class="buy-price"><span class="cur">Rp </span><span id="pd-price">450.000</span></div>
+          <span class="buy-discount" id="pd-discount">-20%</span>
+        </div>
+        <div class="buy-original" id="pd-original">Rp 562.500</div>
+        
+        <div class="qty-control">
+          <span class="qty-label">Jumlah:</span>
+          <div class="qty-box">
+            <button class="qty-btn" onclick="changeQty(-1)">-</button>
+            <input type="number" class="qty-num" id="qty-val" value="1" min="1" max="99">
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+
+        <button class="btn-buy" onclick="addToCart()"><i class="ti ti-shopping-cart"></i> Tambah ke Keranjang</button>
+        <button class="btn-buy secondary" onclick="buyNow()"><i class="ti ti-bolt"></i> Beli Sekarang</button>
+        
+        <div class="divider" style="margin:1rem 0"></div>
+        <div class="buy-safety"><i class="ti ti-shield-check"></i> Transaksi dijamin 100% aman</div>
+        <div class="buy-safety" style="margin-top:6px"><i class="ti ti-clock"></i> Pengiriman instan setelah pembayaran</div>
+        <div class="buy-safety" style="margin-top:6px"><i class="ti ti-refresh"></i> Garansi uang kembali 24 jam</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ CART PAGE -->
+<div id="page-cart" class="page">
+  <div class="page-title">🛒 Keranjang Belanja</div>
+  <div class="page-subtitle">Periksa pesanan sebelum checkout</div>
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:2rem;padding:0 2rem 2rem;max-width:1000px">
+    <div id="cart-items-list"></div>
+    <div>
+      <div class="buy-card" style="position:sticky;top:80px">
+        <div style="font-size:16px;font-weight:800;margin-bottom:1rem">Ringkasan Pesanan</div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text2);font-weight:600;margin-bottom:8px">
+          <span>Subtotal</span><span id="cart-subtotal">Rp 975.000</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--text2);font-weight:600;margin-bottom:8px">
+          <span>Biaya Platform</span><span>Rp 0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--success);font-weight:700;margin-bottom:12px">
+          <span>Diskon</span><span>-Rp 97.500</span>
+        </div>
+        <div class="divider" style="margin:12px 0"></div>
+        <div style="display:flex;justify-content:space-between;font-size:17px;font-weight:900;margin-bottom:1.25rem">
+          <span>Total</span><span id="cart-total">Rp 877.500</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:1rem">
+          <input type="text" class="form-input" placeholder="Kode promo" style="flex:1;font-size:13px">
+          <button class="nav-btn" style="font-size:13px">Pakai</button>
+        </div>
+        <button class="btn-buy" onclick="checkout()"><i class="ti ti-lock"></i> Checkout Aman</button>
+        <button class="btn-buy secondary" onclick="showPage('browse')">Lanjut Belanja</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SELL PAGE -->
+<div id="page-sell" class="page">
+  <div class="page-title">💰 Jual Item</div>
+  <div class="page-subtitle">Posting item kamu dan mulai cuan sekarang</div>
+  <div style="max-width:680px;padding:0 2rem 3rem">
+    <div class="form-grid">
+      <div class="form-group full">
+        <div class="form-label">NAMA ITEM *</div>
+        <input class="form-input" placeholder="Cth: Starlight Skin Bruno Collector" id="sell-name">
+      </div>
+      <div class="form-group">
+        <div class="form-label">KATEGORI GAME *</div>
+        <select class="form-select" id="sell-game">
+          <option value="">Pilih Game</option>
+          <option>Mobile Legends</option>
+          <option>PUBG Mobile</option>
+          <option>Free Fire</option>
+          <option>Genshin Impact</option>
+          <option>Valorant</option>
+          <option>Dota 2</option>
+          <option>Call of Duty Mobile</option>
+          <option>Honkai Star Rail</option>
+          <option>League of Legends</option>
+          <option>Minecraft</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">TIPE ITEM *</div>
+        <select class="form-select" id="sell-type">
+          <option value="">Pilih Tipe</option>
+          <option>Skin / Kostum</option>
+          <option>Akun Game</option>
+          <option>Top Up / Currency</option>
+          <option>Hero / Karakter</option>
+          <option>Item Langka</option>
+          <option>Jasa Boosting</option>
+          <option>Bundle / Paket</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">HARGA (Rp) *</div>
+        <input class="form-input" type="number" placeholder="50000" id="sell-price">
+      </div>
+      <div class="form-group">
+        <div class="form-label">STOK</div>
+        <input class="form-input" type="number" placeholder="1" id="sell-stock">
+      </div>
+      <div class="form-group full">
+        <div class="form-label">DESKRIPSI ITEM *</div>
+        <textarea class="form-textarea" placeholder="Jelaskan detail item: kondisi, bonus, cara pengiriman, dll." id="sell-desc"></textarea>
+      </div>
+      <div class="form-group full">
+        <div class="form-label">FOTO ITEM</div>
+        <div class="upload-zone" onclick="showToast('Fitur upload tersedia setelah login', 'info')">
+          <i class="ti ti-photo-up"></i>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">Klik untuk upload foto</div>
+          <div style="font-size:12px">JPG, PNG, WEBP — Maks 5MB per foto</div>
+        </div>
+      </div>
+      <div class="form-group full">
+        <div class="form-label">METODE PENGIRIMAN</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text2)">
+            <input type="checkbox" checked style="accent-color:var(--primary)"> Via Chat
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text2)">
+            <input type="checkbox" style="accent-color:var(--primary)"> Email
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text2)">
+            <input type="checkbox" style="accent-color:var(--primary)"> WhatsApp
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text2)">
+            <input type="checkbox" checked style="accent-color:var(--primary)"> Otomatis (Instant Delivery)
+          </label>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;display:flex;gap:12px">
+      <button class="btn-buy" style="max-width:200px" onclick="submitSell()"><i class="ti ti-plus"></i> Posting Iklan</button>
+      <button class="btn-buy secondary" style="max-width:200px">Simpan Draft</button>
+    </div>
+    <div class="divider"></div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem">
+      <div style="font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-info-circle" style="color:var(--primary)"></i> Ketentuan Penjualan
+      </div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+        <li style="font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:flex-start;gap:8px"><i class="ti ti-check" style="color:var(--success);flex-shrink:0;margin-top:1px"></i> Komisi platform 5% dari harga jual</li>
+        <li style="font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:flex-start;gap:8px"><i class="ti ti-check" style="color:var(--success);flex-shrink:0;margin-top:1px"></i> Dana masuk ke dompet dalam 24 jam setelah konfirmasi pembeli</li>
+        <li style="font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:flex-start;gap:8px"><i class="ti ti-check" style="color:var(--success);flex-shrink:0;margin-top:1px"></i> Dilarang menjual item hasil hack/cheat</li>
+        <li style="font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:flex-start;gap:8px"><i class="ti ti-check" style="color:var(--success);flex-shrink:0;margin-top:1px"></i> Iklan yang melanggar akan langsung dihapus</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ DASHBOARD PAGE -->
+<div id="page-dashboard" class="page">
+  <div class="page-title">📊 Dashboard</div>
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="switchDashTab(this,'overview')">Overview</button>
+    <button class="dash-tab" onclick="switchDashTab(this,'orders')">Pesanan</button>
+    <button class="dash-tab" onclick="switchDashTab(this,'listings')">Iklan Saya</button>
+    <button class="dash-tab" onclick="switchDashTab(this,'wallet')">Dompet</button>
+    <button class="dash-tab" onclick="switchDashTab(this,'profile')">Profil</button>
+  </div>
+
+  <!-- Overview -->
+  <div class="dash-panel active" id="dash-overview">
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-label">Total Penjualan</div>
+        <div class="metric-value">Rp 4.2JT</div>
+        <div class="metric-change up"><i class="ti ti-trending-up"></i> +12.5% bulan ini</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Order Masuk</div>
+        <div class="metric-value">128</div>
+        <div class="metric-change up"><i class="ti ti-trending-up"></i> +8 hari ini</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Rating Toko</div>
+        <div class="metric-value">4.9 ★</div>
+        <div class="metric-change up">243 ulasan</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Saldo Dompet</div>
+        <div class="metric-value">Rp 850K</div>
+        <div class="metric-change">Siap dicairkan</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-bottom:1rem">Order Terbaru</div>
+    <div style="display:flex;flex-direction:column;gap:10px" id="dash-recent-orders"></div>
+  </div>
+
+  <!-- Orders -->
+  <div class="dash-panel" id="dash-orders">
+    <div class="filter-bar">
+      <button class="filter-btn active">Semua</button>
+      <button class="filter-btn">Menunggu</button>
+      <button class="filter-btn">Diproses</button>
+      <button class="filter-btn">Selesai</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px" id="orders-list"></div>
+  </div>
+
+  <!-- Listings -->
+  <div class="dash-panel" id="dash-listings">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div style="font-size:16px;font-weight:800">Iklan Aktif (12)</div>
+      <button class="btn-hero main" style="padding:9px 18px;font-size:13px" onclick="showPage('sell')"><i class="ti ti-plus"></i> Tambah Iklan</button>
+    </div>
+    <div class="items-grid" id="my-listings"></div>
+  </div>
+
+  <!-- Wallet -->
+  <div class="dash-panel" id="dash-wallet">
+    <div class="wallet-card">
+      <div class="wallet-label">SALDO ITEMZONE</div>
+      <div class="wallet-balance">Rp 850.000</div>
+      <div class="wallet-actions">
+        <button class="wallet-btn" onclick="showModal('topup-modal')"><i class="ti ti-plus"></i> Top Up</button>
+        <button class="wallet-btn" onclick="showToast('Fitur cairkan dana sedang maintenance','info')"><i class="ti ti-arrow-down"></i> Cairkan</button>
+        <button class="wallet-btn" onclick="showToast('Transfer saldo berhasil','success')"><i class="ti ti-arrow-right"></i> Transfer</button>
+      </div>
+    </div>
+    <div class="section-title" style="margin-bottom:1rem">Riwayat Transaksi</div>
+    <div id="wallet-history"></div>
+  </div>
+
+  <!-- Profile -->
+  <div class="dash-panel" id="dash-profile">
+    <div style="max-width:560px">
+      <div class="seller-card" style="margin-bottom:1.5rem">
+        <div class="seller-avatar" style="width:80px;height:80px;font-size:32px">JK</div>
+        <div>
+          <div style="font-size:20px;font-weight:900">JualKuy Official</div>
+          <div style="font-size:14px;color:var(--text3);font-weight:600;margin-top:4px">jualkuy@email.com</div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px">Seller Terverifikasi</span>
+            <span style="background:rgba(245,166,35,0.15);color:var(--gold);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px">Top Seller</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <div class="form-label">NAMA LENGKAP</div>
+          <input class="form-input" value="Budi Santoso">
+        </div>
+        <div class="form-group">
+          <div class="form-label">USERNAME</div>
+          <input class="form-input" value="jualkuy_official">
+        </div>
+        <div class="form-group">
+          <div class="form-label">EMAIL</div>
+          <input class="form-input" type="email" value="jualkuy@email.com">
+        </div>
+        <div class="form-group">
+          <div class="form-label">NO. HP</div>
+          <input class="form-input" value="+62 812 3456 7890">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">BIO TOKO</div>
+          <textarea class="form-textarea" style="min-height:80px">Seller terpercaya sejak 2021. Spesialis skin Mobile Legends dan akun Genshin Impact.</textarea>
+        </div>
+      </div>
+      <button class="btn-buy" style="max-width:180px;margin-top:1.25rem" onclick="showToast('Profil berhasil disimpan','success')"><i class="ti ti-check"></i> Simpan Profil</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PAYMENT PAGE -->
+<div id="page-payment" class="page">
+  <div id="payment-main">
+    <div class="page-title">💳 Pembayaran</div>
+    <div class="page-subtitle">Selesaikan pembayaran sebelum waktu habis</div>
+    <div class="payment-layout">
+      <!-- LEFT: Metode & Form -->
+      <div>
+        <!-- Timer -->
+        <div class="pay-timer">
+          <i class="ti ti-clock"></i>
+          <div>
+            <div class="pay-timer-label">SELESAIKAN PEMBAYARAN DALAM</div>
+            <div class="pay-timer-count" id="pay-countdown">23:59</div>
+          </div>
+        </div>
+
+        <!-- STEP 1: Metode Pembayaran -->
+        <div class="pay-section">
+          <div class="pay-section-title">
+            <div class="pay-step-badge">1</div>
+            Pilih Metode Pembayaran
+          </div>
+
+          <!-- Transfer Bank -->
+          <div class="pay-method-group">
+            <div class="pay-method-label">Transfer Bank / Virtual Account</div>
+            <div class="pay-methods">
+              <div class="pay-method" onclick="selectMethod(this,'bca')">
+                <div class="pay-method-icon" style="background:#006CB5;color:#fff;font-size:13px;font-weight:900">BCA</div>
+                <div><div class="pay-method-name">BCA Virtual Account</div><div class="pay-method-desc">Instan 24 jam</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'bni')">
+                <div class="pay-method-icon" style="background:#FF6600;color:#fff;font-size:13px;font-weight:900">BNI</div>
+                <div><div class="pay-method-name">BNI Virtual Account</div><div class="pay-method-desc">Instan 24 jam</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'mandiri')">
+                <div class="pay-method-icon" style="background:#003D7C;color:#fff;font-size:11px;font-weight:900">MDR</div>
+                <div><div class="pay-method-name">Mandiri VA</div><div class="pay-method-desc">Instan 24 jam</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'bri')">
+                <div class="pay-method-icon" style="background:#00A0E3;color:#fff;font-size:13px;font-weight:900">BRI</div>
+                <div><div class="pay-method-name">BRI Virtual Account</div><div class="pay-method-desc">Instan 24 jam</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'permata')">
+                <div class="pay-method-icon" style="background:#CC1430;color:#fff;font-size:11px;font-weight:900">PMT</div>
+                <div><div class="pay-method-name">Permata VA</div><div class="pay-method-desc">Instan 24 jam</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'cimb')">
+                <div class="pay-method-icon" style="background:#D71920;color:#fff;font-size:10px;font-weight:900">CIMB</div>
+                <div><div class="pay-method-name">CIMB Niaga VA</div><div class="pay-method-desc">Instan 24 jam</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- E-Wallet -->
+          <div class="pay-method-group">
+            <div class="pay-method-label">E-Wallet & QRIS</div>
+            <div class="pay-methods">
+              <div class="pay-method" onclick="selectMethod(this,'qris')">
+                <div class="pay-method-icon" style="background:#1A1A1A;font-size:18px">🔲</div>
+                <div><div class="pay-method-name">QRIS</div><div class="pay-method-desc">GoPay, OVO, Dana, dll</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'gopay')">
+                <div class="pay-method-icon" style="background:#00AED6;color:#fff;font-size:12px;font-weight:900">GP</div>
+                <div><div class="pay-method-name">GoPay</div><div class="pay-method-desc">Saldo GoPay</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'ovo')">
+                <div class="pay-method-icon" style="background:#4C3494;color:#fff;font-size:12px;font-weight:900">OVO</div>
+                <div><div class="pay-method-name">OVO</div><div class="pay-method-desc">Saldo OVO</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'dana')">
+                <div class="pay-method-icon" style="background:#118EEA;color:#fff;font-size:11px;font-weight:900">DANA</div>
+                <div><div class="pay-method-name">DANA</div><div class="pay-method-desc">Saldo DANA</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'shopee')">
+                <div class="pay-method-icon" style="background:#EE4D2D;color:#fff;font-size:10px;font-weight:900">SPAY</div>
+                <div><div class="pay-method-name">ShopeePay</div><div class="pay-method-desc">Saldo ShopeePay</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'linkaja')">
+                <div class="pay-method-icon" style="background:#E82529;color:#fff;font-size:9px;font-weight:900">LINK</div>
+                <div><div class="pay-method-name">LinkAja</div><div class="pay-method-desc">Saldo LinkAja</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kartu Kredit/Debit -->
+          <div class="pay-method-group">
+            <div class="pay-method-label">Kartu Kredit / Debit</div>
+            <div class="pay-methods">
+              <div class="pay-method" onclick="selectMethod(this,'visa')">
+                <div class="pay-method-icon" style="background:#1A1F71;color:#fff;font-size:12px;font-weight:900;font-style:italic">VISA</div>
+                <div><div class="pay-method-name">Visa</div><div class="pay-method-desc">Kredit & Debit</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'mastercard')">
+                <div class="pay-method-icon" style="background:#252525;font-size:18px">💳</div>
+                <div><div class="pay-method-name">Mastercard</div><div class="pay-method-desc">Kredit & Debit</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Minimarket & Lainnya -->
+          <div class="pay-method-group">
+            <div class="pay-method-label">Minimarket & Lainnya</div>
+            <div class="pay-methods">
+              <div class="pay-method" onclick="selectMethod(this,'indomaret')">
+                <div class="pay-method-icon" style="background:#E31E24;color:#fff;font-size:9px;font-weight:900">INDO</div>
+                <div><div class="pay-method-name">Indomaret</div><div class="pay-method-desc">Bayar di kasir</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'alfamart')">
+                <div class="pay-method-icon" style="background:#D71920;color:#fff;font-size:9px;font-weight:900">ALFA</div>
+                <div><div class="pay-method-name">Alfamart</div><div class="pay-method-desc">Bayar di kasir</div></div>
+              </div>
+              <div class="pay-method" onclick="selectMethod(this,'saldo')">
+                <div class="pay-method-icon" style="background:rgba(108,63,232,0.2);font-size:18px">💜</div>
+                <div><div class="pay-method-name">Saldo ItemZone</div><div class="pay-method-desc" id="saldo-avail">Rp 850.000</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Detail Pembayaran (muncul setelah pilih metode) -->
+        <div class="pay-section" id="pay-detail-section" style="display:none">
+          <div class="pay-section-title">
+            <div class="pay-step-badge">2</div>
+            <span id="pay-detail-title">Detail Pembayaran</span>
+          </div>
+
+          <!-- Virtual Account Box -->
+          <div class="va-box" id="va-box">
+            <div class="va-bank-logo">
+              <div class="va-bank-icon" id="va-bank-icon" style="background:#006CB5;color:#fff;font-weight:900;font-size:14px">BCA</div>
+              <div>
+                <div style="font-size:15px;font-weight:800;color:var(--text)" id="va-bank-name">BCA Virtual Account</div>
+                <div style="font-size:12px;color:var(--text3);font-weight:600">Berlaku untuk semua rekening BCA</div>
+              </div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Nomor Virtual Account</div>
+            <div class="va-number-box">
+              <div class="va-number" id="va-number">1234 5678 9012 3456</div>
+              <button class="copy-btn" onclick="copyVA()"><i class="ti ti-copy"></i> Salin</button>
+            </div>
+            <div class="va-expire"><i class="ti ti-clock"></i> Kode expired dalam: <span id="va-timer">23:59</span></div>
+            <div style="font-size:13px;font-weight:800;color:var(--text2);margin-bottom:10px">Cara Bayar via ATM BCA:</div>
+            <ul class="va-steps" id="va-steps"></ul>
+          </div>
+
+          <!-- QRIS Box -->
+          <div class="qris-box" id="qris-box">
+            <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:1rem">Scan QR code berikut dengan aplikasi e-wallet atau m-banking kamu</div>
+            <div class="qris-img" id="qris-canvas"></div>
+            <div style="font-size:13px;color:var(--text3);font-weight:600;margin-bottom:1rem">QR berlaku selama <strong style="color:var(--danger)">15 menit</strong></div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:1rem">
+              <span style="background:var(--bg3);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text2)">GoPay</span>
+              <span style="background:var(--bg3);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text2)">OVO</span>
+              <span style="background:var(--bg3);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text2)">Dana</span>
+              <span style="background:var(--bg3);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text2)">ShopeePay</span>
+              <span style="background:var(--bg3);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text2)">LinkAja</span>
+              <span style="background:var(--bg3);padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text2)">Semua Bank</span>
+            </div>
+            <button class="copy-btn" style="margin:0 auto" onclick="showToast('QR code disimpan ke galeri','success')"><i class="ti ti-download"></i> Simpan QR</button>
+          </div>
+
+          <!-- Credit Card Form -->
+          <div class="card-form" id="card-form">
+            <div class="card-preview">
+              <div class="card-chip"></div>
+              <div class="card-number-preview" id="preview-number">•••• •••• •••• ••••</div>
+              <div class="card-bottom">
+                <div>
+                  <div class="card-label">Nama di Kartu</div>
+                  <div class="card-val" id="preview-name">NAMA PEMEGANG</div>
+                </div>
+                <div>
+                  <div class="card-label">Expired</div>
+                  <div class="card-val" id="preview-exp">MM/YY</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <div class="form-label">NOMOR KARTU</div>
+                <input class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" id="cc-number" oninput="formatCC(this)">
+              </div>
+              <div class="form-group full">
+                <div class="form-label">NAMA PEMEGANG KARTU</div>
+                <input class="form-input" placeholder="BUDI SANTOSO" id="cc-name" oninput="document.getElementById('preview-name').textContent=this.value||'NAMA PEMEGANG'">
+              </div>
+              <div class="form-group">
+                <div class="form-label">EXPIRED DATE</div>
+                <input class="form-input" placeholder="MM/YY" maxlength="5" id="cc-exp" oninput="formatExp(this)">
+              </div>
+              <div class="form-group">
+                <div class="form-label">CVV / CVC</div>
+                <input class="form-input" placeholder="•••" maxlength="4" type="password" id="cc-cvv">
+              </div>
+            </div>
+            <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:12px 16px;margin-top:1rem;display:flex;align-items:center;gap:10px">
+              <i class="ti ti-lock" style="color:var(--success);font-size:18px;flex-shrink:0"></i>
+              <div style="font-size:12px;font-weight:600;color:var(--text2)">Transaksi dienkripsi dengan SSL 256-bit. Data kartu kamu aman dan tidak disimpan.</div>
+            </div>
+          </div>
+
+          <!-- Saldo ItemZone -->
+          <div class="balance-box" id="balance-box">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <div style="font-size:13px;font-weight:700;color:var(--text2)">Saldo ItemZone kamu</div>
+                <div style="font-size:20px;font-weight:900;color:var(--success)">Rp 850.000</div>
+              </div>
+              <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
+                <div style="height:100%;background:var(--primary);width:70%;border-radius:3px"></div>
+              </div>
+              <div id="saldo-check" style="margin-top:10px;font-size:13px;font-weight:700"></div>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:var(--text2);line-height:1.6">
+              Saldo ItemZone akan langsung dikurangi saat kamu menekan tombol <strong style="color:var(--text)">Bayar Sekarang</strong>. Tidak perlu proses transfer!
+            </div>
+          </div>
+
+          <!-- Minimarket Box -->
+          <div id="minimarket-box" style="display:none">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem">
+              <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px">Kode Pembayaran</div>
+              <div class="va-number-box">
+                <div class="va-number" style="font-size:18px;letter-spacing:4px" id="minimarket-code">1234 5678</div>
+                <button class="copy-btn" onclick="showToast('Kode disalin!','success')"><i class="ti ti-copy"></i> Salin</button>
+              </div>
+              <div class="va-expire" style="margin-top:10px"><i class="ti ti-clock"></i> Expired: <span>23:59</span></div>
+              <div style="font-size:13px;font-weight:700;color:var(--text2);margin:1rem 0 8px">Cara Bayar:</div>
+              <ul class="va-steps" id="minimarket-steps"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Konfirmasi -->
+        <div class="pay-section" id="pay-confirm-section" style="display:none">
+          <div class="pay-section-title">
+            <div class="pay-step-badge">3</div>
+            Konfirmasi Pesanan
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem">
+            <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:var(--text2)">
+              <span>Metode Bayar</span>
+              <span style="color:var(--text);font-weight:800" id="confirm-method">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:var(--text2)">
+              <span>Total Bayar</span>
+              <span style="color:var(--primary);font-size:16px;font-weight:900" id="confirm-total">Rp 877.500</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:var(--text2)">
+              <span>Proteksi Pembeli</span>
+              <span style="color:var(--success);font-weight:800"><i class="ti ti-shield-check"></i> Aktif</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:1.25rem">
+            <input type="checkbox" id="agree-tos" style="accent-color:var(--primary);margin-top:3px;flex-shrink:0">
+            <label for="agree-tos" style="font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;line-height:1.5">
+              Saya setuju dengan <span style="color:var(--primary)">Syarat & Ketentuan</span> dan <span style="color:var(--primary)">Kebijakan Privasi</span> ItemZone. Saya memahami bahwa pembayaran bersifat final.
+            </label>
+          </div>
+          <button class="btn-buy" id="pay-now-btn" onclick="processPayment()">
+            <i class="ti ti-lock"></i> Bayar Sekarang · <span id="btn-total">Rp 877.500</span>
+          </button>
+          <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text3)"><i class="ti ti-shield-check" style="color:var(--success)"></i> SSL Terenkripsi</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text3)"><i class="ti ti-rotate-clockwise-2" style="color:var(--primary)"></i> Garansi Uang Kembali</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text3)"><i class="ti ti-headset" style="color:var(--gold)"></i> Support 24/7</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Order Summary -->
+      <div>
+        <div class="order-summary-card">
+          <div style="font-size:15px;font-weight:800;margin-bottom:1rem">Ringkasan Pesanan</div>
+          <div class="summary-items" id="pay-summary-items"></div>
+          <div class="summary-rows">
+            <div class="summary-row"><span>Subtotal</span><span id="pay-sub">Rp 975.000</span></div>
+            <div class="summary-row discount"><span>Diskon 10%</span><span id="pay-disc">-Rp 97.500</span></div>
+            <div class="summary-row free"><span>Biaya Layanan</span><span>GRATIS</span></div>
+            <div class="summary-row total"><span>Total</span><span id="pay-total">Rp 877.500</span></div>
+          </div>
+
+          <!-- Voucher -->
+          <div style="margin-bottom:1rem">
+            <div style="font-size:12px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Kode Voucher</div>
+            <div style="display:flex;gap:8px">
+              <input class="form-input" style="flex:1;font-size:13px" placeholder="Masukkan kode" id="voucher-input">
+              <button class="nav-btn" style="font-size:13px;padding:8px 14px" onclick="applyVoucher()">Pakai</button>
+            </div>
+            <div id="voucher-msg" style="font-size:12px;font-weight:700;margin-top:6px"></div>
+          </div>
+
+          <!-- Payment guarantee -->
+          <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:12px">
+            <div style="font-size:12px;font-weight:800;color:var(--success);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-shield-check"></i> JAMINAN KEAMANAN</div>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
+              <li style="font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="color:var(--success);font-size:13px"></i> Dana ditahan hingga item diterima</li>
+              <li style="font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="color:var(--success);font-size:13px"></i> Garansi uang kembali 24 jam</li>
+              <li style="font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="color:var(--success);font-size:13px"></i> Customer service 24/7</li>
+              <li style="font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="color:var(--success);font-size:13px"></i> Transaksi dienkripsi SSL 256-bit</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="pay-success" id="pay-success">
+    <div class="success-anim">✓</div>
+    <div class="success-title">Pembayaran Berhasil! 🎉</div>
+    <div class="success-sub">Transaksi kamu telah dikonfirmasi. Item akan segera dikirimkan oleh seller. Cek status pesanan di Dashboard.</div>
+    <div class="success-order-id">
+      <div class="success-id-label">Nomor Order</div>
+      <div class="success-id-val" id="success-order-id">#IZ-2026-00847</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;max-width:400px;margin:0 auto 2rem;text-align:left">
+      <div style="font-size:13px;font-weight:800;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Detail Transaksi</div>
+      <div id="success-detail"></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-hero main" onclick="showPage('dashboard')"><i class="ti ti-list-check"></i> Lihat Pesanan</button>
+      <button class="btn-hero outline" onclick="showPage('home')"><i class="ti ti-home"></i> Kembali ke Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ CHAT PAGE -->
+<div id="page-chat" class="page">
+  <div class="page-title">💬 Chat</div>
+  <div class="page-subtitle">Tanya seller sebelum membeli</div>
+  <div style="padding:0 2rem 2rem">
+    <div class="chat-box">
+      <div class="chat-header">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#9B6EFF);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:14px">JK</div>
+        <div>
+          <div style="font-size:15px;font-weight:800">JualKuy Official</div>
+          <div style="font-size:12px;color:var(--success);font-weight:600;display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;background:var(--success);border-radius:50%;display:inline-block"></span> Online</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-msgs">
+        <div class="msg theirs">
+          <div class="msg-bubble">Halo! Selamat datang di toko JualKuy 🎮 Ada yang bisa saya bantu?</div>
+          <div class="msg-time">10.00</div>
+        </div>
+        <div class="msg mine">
+          <div class="msg-bubble">Halo kak, skin Valir Collection masih ada stok?</div>
+          <div class="msg-time">10.01</div>
+        </div>
+        <div class="msg theirs">
+          <div class="msg-bubble">Masih ada kak! Tinggal 3 stok lagi. Harganya Rp 450.000, sudah termasuk hero Valir-nya juga 😊</div>
+          <div class="msg-time">10.02</div>
+        </div>
+        <div class="msg theirs">
+          <div class="msg-bubble">Pengiriman langsung via akun setelah pembayaran dikonfirmasi, prosesnya cepat kok kak!</div>
+          <div class="msg-time">10.02</div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" placeholder="Ketik pesan..." id="chat-input-field" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()"><i class="ti ti-send"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ MODALS -->
+<!-- Login Modal -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('login-modal')"><i class="ti ti-x"></i></button>
+    <h2>👋 Selamat Datang</h2>
+    <p>Masuk atau daftar untuk mulai transaksi di ItemZone</p>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'login-tab')">Masuk</button>
+      <button class="tab" onclick="switchTab(this,'register-tab')">Daftar</button>
+    </div>
+    <div id="login-tab">
+      <div class="form-group" style="margin-bottom:12px">
+        <div class="form-label">EMAIL / USERNAME</div>
+        <input class="form-input" placeholder="email@contoh.com">
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <div class="form-label">PASSWORD</div>
+        <input class="form-input" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-buy" onclick="login()"><i class="ti ti-lock-open"></i> Masuk</button>
+      <div style="text-align:center;margin-top:1rem;font-size:13px;color:var(--text3);font-weight:600">
+        Atau masuk dengan
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn-buy secondary" onclick="showToast('Login Google berhasil!','success');closeModal('login-modal')"><i class="ti ti-brand-google"></i> Google</button>
+        <button class="btn-buy secondary" onclick="showToast('Login berhasil!','success');closeModal('login-modal')"><i class="ti ti-brand-facebook"></i> Facebook</button>
+      </div>
+    </div>
+    <div id="register-tab" style="display:none">
+      <div class="form-grid" style="margin-bottom:12px">
+        <div class="form-group">
+          <div class="form-label">NAMA LENGKAP</div>
+          <input class="form-input" placeholder="Budi Santoso">
+        </div>
+        <div class="form-group">
+          <div class="form-label">USERNAME</div>
+          <input class="form-input" placeholder="budisantoso">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">EMAIL</div>
+          <input class="form-input" type="email" placeholder="email@contoh.com">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">PASSWORD</div>
+          <input class="form-input" type="password" placeholder="Min. 8 karakter">
+        </div>
+      </div>
+      <button class="btn-buy" onclick="showToast('Akun berhasil dibuat!','success');closeModal('login-modal')">
+        <i class="ti ti-user-plus"></i> Buat Akun Gratis
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Notif Modal -->
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('notif-modal')"><i class="ti ti-x"></i></button>
+    <h2>🔔 Notifikasi</h2>
+    <div id="notif-list"></div>
+  </div>
+</div>
+
+<!-- Top Up Modal -->
+<div class="modal-overlay" id="topup-modal">
+  <div class="modal" style="max-width:400px">
+    <button class="modal-close" onclick="closeModal('topup-modal')"><i class="ti ti-x"></i></button>
+    <h2>💳 Top Up Saldo</h2>
+    <p>Pilih nominal dan metode pembayaran</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">
+      <button class="filter-btn" onclick="selectTopup(this,'50000')">Rp 50.000</button>
+      <button class="filter-btn" onclick="selectTopup(this,'100000')">Rp 100.000</button>
+      <button class="filter-btn" onclick="selectTopup(this,'250000')">Rp 250.000</button>
+      <button class="filter-btn" onclick="selectTopup(this,'500000')">Rp 500.000</button>
+      <button class="filter-btn" onclick="selectTopup(this,'1000000')">Rp 1.000.000</button>
+      <input class="form-input" type="number" placeholder="Nominal lain">
+    </div>
+    <div class="form-group" style="margin-bottom:1.25rem">
+      <div class="form-label">METODE BAYAR</div>
+      <select class="form-select">
+        <option>Transfer Bank (BCA, BNI, Mandiri)</option>
+        <option>QRIS / GoPay / OVO / Dana</option>
+        <option>Kartu Kredit / Debit</option>
+        <option>Indomaret / Alfamart</option>
+      </select>
+    </div>
+    <button class="btn-buy" onclick="showToast('Pembayaran berhasil! Saldo ditambahkan.','success');closeModal('topup-modal')">
+      <i class="ti ti-credit-card"></i> Bayar Sekarang
+    </button>
+  </div>
+</div>
+
+<!-- Bottom Nav (Mobile) -->
+<nav class="bottom-nav">
+  <div class="bnav-items">
+    <button class="bnav-item active" onclick="showPage('home');setActiveNav(this)"><i class="ti ti-home"></i>Home</button>
+    <button class="bnav-item" onclick="showPage('browse');setActiveNav(this)"><i class="ti ti-search"></i>Cari</button>
+    <button class="bnav-item" onclick="showPage('sell');setActiveNav(this)"><i class="ti ti-plus-circle"></i>Jual</button>
+    <button class="bnav-item" onclick="showPage('cart');setActiveNav(this)"><i class="ti ti-shopping-cart"></i>Keranjang</button>
+    <button class="bnav-item" onclick="showPage('dashboard');setActiveNav(this)"><i class="ti ti-user-circle"></i>Profil</button>
+  </div>
+</nav>
+
+<script>
+// ===================== DATA =====================
+const games = [
+  { name:'Mobile Legends', icon:'⚔️', color:'#FF6B35', count:'12.4K item' },
+  { name:'PUBG Mobile', icon:'🔫', color:'#F5A623', count:'8.2K item' },
+  { name:'Free Fire', icon:'🔥', color:'#FF3B3B', count:'6.8K item' },
+  { name:'Genshin Impact', icon:'✨', color:'#6C3FE8', count:'9.1K item' },
+  { name:'Valorant', icon:'🎯', color:'#FF4655', count:'5.3K item' },
+  { name:'Dota 2', icon:'🛡️', color:'#B23333', count:'7.7K item' },
+  { name:'COD Mobile', icon:'💣', color:'#4CAF50', count:'3.2K item' },
+  { name:'Honkai SR', icon:'🌟', color:'#9B6EFF', count:'4.5K item' },
+];
+
+const itemsData = [
+  { id:1, name:'Skin Valir Collection Starlight', game:'Mobile Legends', price:450000, original:562500, discount:20, rating:4.9, reviews:234, sold:1200, emoji:'⚔️', badge:'hot', desc:'Skin eksklusif Starlight Valir Collection dengan efek spesial. Sudah include hero Valir.' },
+  { id:2, name:'UC 660 + Bonus 60 PUBG Mobile', game:'PUBG Mobile', price:135000, original:150000, discount:10, rating:4.8, reviews:892, sold:5400, emoji:'🔫', badge:'sale', desc:'Top up 660 UC + bonus 60 UC. Pengiriman langsung ke akun dalam 5 menit.' },
+  { id:3, name:'Akun FF Rank Heroic + 50 Skin', game:'Free Fire', price:280000, original:280000, discount:0, rating:4.7, reviews:127, sold:340, emoji:'🔥', badge:'new', desc:'Akun Free Fire rank Heroic dengan 50+ skin premium. Garansi tidak ada trojan/virus.' },
+  { id:4, name:'Genesis Crystal 6480 Genshin', game:'Genshin Impact', price:920000, original:1100000, discount:16, rating:5.0, reviews:456, sold:2100, emoji:'✨', badge:'hot', desc:'Genesis Crystal 6480 untuk Genshin Impact. Setelah konversi = 6480 Primogem.' },
+  { id:5, name:'VP 1000 Valorant Points', game:'Valorant', price:155000, original:175000, discount:11, rating:4.9, reviews:312, sold:890, emoji:'🎯', badge:'', desc:'1000 VP untuk Valorant. Masukkan Riot ID dan tagline kamu, isi otomatis dalam 10 menit.' },
+  { id:6, name:'Jasa Boost Mythic Glory MLBB', game:'Mobile Legends', price:750000, original:900000, discount:17, rating:4.8, reviews:89, sold:210, emoji:'🏆', badge:'hot', desc:'Layanan boost dari Mythic ke Mythic Glory. Estimasi 3-5 hari, anti suspend.' },
+  { id:7, name:'Akun Genshin AR55 5 Karakter 5★', game:'Genshin Impact', price:350000, original:350000, discount:0, rating:4.6, reviews:67, sold:145, emoji:'🌟', badge:'new', desc:'Akun Genshin Impact AR55 dengan 5 karakter bintang 5 termasuk Hu Tao dan Raiden Shogun.' },
+  { id:8, name:'Bundle FF Rampage + 10 Skin', game:'Free Fire', price:199000, original:250000, discount:20, rating:4.7, reviews:203, sold:670, emoji:'💎', badge:'sale', desc:'Bundle lengkap Free Fire Rampage edisi terbatas + 10 skin weapon random.' },
+];
+
+const sellers = [
+  { name:'JualKuy Official', avatar:'JK', rating:4.9, sold:'2.4K', badge:'Top Seller', verified:true },
+  { name:'SkinsWorld Store', avatar:'SW', rating:4.8, sold:'1.8K', badge:'Level 10', verified:true },
+  { name:'GameItemsPro', avatar:'GP', rating:4.9, sold:'3.1K', badge:'Top Seller', verified:true },
+];
+
+const notifications = [
+  { title:'Order #4521 Dikonfirmasi', desc:'Pembeli telah mengkonfirmasi penerimaan item kamu. Dana akan masuk dalam 24 jam.', time:'5 mnt lalu', icon:'ti-check', color:'var(--success)', unread:true },
+  { title:'Review Baru Masuk', desc:'Budi S. memberi rating 5★ untuk Skin Valir Collection.', time:'1 jam lalu', icon:'ti-star', color:'var(--gold)', unread:true },
+  { title:'Flash Sale Dimulai!', desc:'Flash sale Mobile Legends skin dimulai sekarang. Diskon hingga 50%!', time:'2 jam lalu', icon:'ti-bolt', color:'var(--accent)', unread:false },
+  { title:'Penarikan Dana Berhasil', desc:'Rp 500.000 berhasil ditransfer ke rekening BCA kamu.', time:'Kemarin', icon:'ti-wallet', color:'var(--primary)', unread:false },
+];
+
+const ordersData = [
+  { name:'Skin Valir Collection', game:'Mobile Legends', price:'Rp 450.000', status:'success', emoji:'⚔️', date:'10 Jun 2026', buyer:'Budi S.' },
+  { name:'UC 660 PUBG Mobile', game:'PUBG Mobile', price:'Rp 135.000', status:'process', emoji:'🔫', date:'11 Jun 2026', buyer:'Andi W.' },
+  { name:'VP 1000 Valorant', game:'Valorant', price:'Rp 155.000', status:'pending', emoji:'🎯', date:'11 Jun 2026', buyer:'Citra R.' },
+  { name:'Akun FF Heroic', game:'Free Fire', price:'Rp 280.000', status:'success', emoji:'🔥', date:'9 Jun 2026', buyer:'Deni M.' },
+];
+
+const walletHistory = [
+  { label:'Penjualan - Skin Valir', amount:'+Rp 427.500', type:'income', time:'10 Jun 2026' },
+  { label:'Penjualan - UC 660', amount:'+Rp 128.250', type:'income', time:'9 Jun 2026' },
+  { label:'Penarikan Dana', amount:'-Rp 500.000', type:'out', time:'8 Jun 2026' },
+  { label:'Penjualan - Akun FF', amount:'+Rp 266.000', type:'income', time:'7 Jun 2026' },
+  { label:'Top Up Saldo', amount:'+Rp 200.000', type:'topup', time:'5 Jun 2026' },
+];
+
+const cartItems = [
+  { id:1, name:'Skin Valir Collection Starlight', game:'Mobile Legends', price:450000, qty:1, emoji:'⚔️' },
+  { id:2, name:'UC 660 PUBG Mobile', game:'PUBG Mobile', price:135000, qty:2, emoji:'🔫' },
+];
+
+// ===================== RENDER =====================
+function fmt(n){ return 'Rp '+n.toLocaleString('id-ID'); }
+
+function renderCategories(){
+  const el = document.getElementById('cat-grid');
+  if(!el) return;
+  el.innerHTML = games.map(g=>`
+    <div class="cat-card" onclick="filterByGame('${g.name}')">
+      <div class="cat-icon" style="background:${g.color}22;font-size:24px">${g.icon}</div>
+      <div class="cat-name">${g.name}</div>
+      <div class="cat-count">${g.count}</div>
+    </div>
+  `).join('');
+}
+
+function renderItemCard(item, showAdd=true){
+  return `
+    <div class="item-card" onclick="openProduct(${item.id})">
+      ${item.badge ? `<span class="item-badge badge-${item.badge}">${item.badge.toUpperCase()}</span>` : ''}
+      <button class="wishlist-btn" onclick="event.stopPropagation();toggleWishlist(this)" title="Wishlist">
+        <i class="ti ti-heart"></i>
+      </button>
+      <div class="item-img" style="background:${item.badge==='hot'?'#1A0D00':item.badge==='sale'?'#0D0A00':'#0D0F1A'}">${item.emoji}</div>
+      <div class="item-body">
+        <span class="item-game-tag">${item.game}</span>
+        <div class="item-name">${item.name}</div>
+        <div class="item-seller"><i class="ti ti-shield-check seller-badge"></i> ItemZone Verified</div>
+        <div class="item-footer">
+          <div class="item-price">
+            <span class="currency">Rp </span>${(item.price/1000).toFixed(0)}K
+          </div>
+          <div class="item-rating">
+            <i class="ti ti-star-filled star"></i> ${item.rating}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderHotItems(){
+  const el = document.getElementById('hot-items');
+  if(!el) return;
+  el.innerHTML = itemsData.slice(0,4).map(i=>renderItemCard(i)).join('');
+}
+
+function renderAllItems(){
+  const el = document.getElementById('all-items');
+  if(!el) return;
+  el.innerHTML = itemsData.map(i=>renderItemCard(i)).join('');
+}
+
+function renderMyListings(){
+  const el = document.getElementById('my-listings');
+  if(!el) return;
+  el.innerHTML = itemsData.slice(0,6).map(i=>renderItemCard(i)).join('');
+}
+
+function renderSellers(){
+  const el = document.getElementById('top-sellers');
+  if(!el) return;
+  el.innerHTML = sellers.map(s=>`
+    <div class="seller-card">
+      <div class="seller-avatar">${s.avatar}</div>
+      <div class="seller-info">
+        <div class="seller-name">${s.name} ${s.verified?'<i class="ti ti-badge-check verified"></i>':''}</div>
+        <div style="margin-top:6px;display:flex;gap:12px">
+          <span style="font-size:13px;color:var(--text3);font-weight:600"><i class="ti ti-star-filled" style="color:var(--gold)"></i> ${s.rating}</span>
+          <span style="font-size:13px;color:var(--text3);font-weight:600"><i class="ti ti-package"></i> ${s.sold} terjual</span>
+        </div>
+        <div style="margin-top:8px">
+          <span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px">${s.badge}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderNotifs(){
+  const el = document.getElementById('notif-list');
+  if(!el) return;
+  el.innerHTML = notifications.map(n=>`
+    <div class="notif ${n.unread?'unread':''}">
+      <div class="notif-icon" style="background:${n.color}22;color:${n.color}"><i class="ti ${n.icon}"></i></div>
+      <div class="notif-text">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-desc">${n.desc}</div>
+      </div>
+      <div class="notif-time">${n.time}</div>
+    </div>
+  `).join('');
+}
+
+function renderOrders(){
+  ['dash-recent-orders','orders-list'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = ordersData.map(o=>`
+      <div class="order-item">
+        <div class="order-icon">${o.emoji}</div>
+        <div class="order-info">
+          <div class="order-name">${o.name}</div>
+          <div class="order-meta">${o.game} · ${o.buyer} · ${o.date}</div>
+        </div>
+        <div>
+          <div class="order-price">${o.price}</div>
+          <div class="order-status status-${o.status}" style="margin-top:6px;text-align:right">
+            ${o.status==='success'?'Selesai':o.status==='process'?'Diproses':'Menunggu'}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function renderWalletHistory(){
+  const el = document.getElementById('wallet-history');
+  if(!el) return;
+  el.innerHTML = walletHistory.map(t=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="width:40px;height:40px;border-radius:12px;background:${t.type==='income'?'rgba(34,197,94,0.1)':t.type==='topup'?'rgba(108,63,232,0.1)':'rgba(239,68,68,0.1)'};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">
+        <i class="ti ${t.type==='income'?'ti-arrow-down-circle':t.type==='topup'?'ti-plus':'ti-arrow-up-circle'}" style="color:${t.type==='income'?'var(--success)':t.type==='topup'?'var(--primary)':'var(--danger)'}"></i>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${t.label}</div>
+        <div style="font-size:12px;color:var(--text3);font-weight:500">${t.time}</div>
+      </div>
+      <div style="font-size:15px;font-weight:800;color:${t.type==='income'?'var(--success)':t.type==='topup'?'var(--primary)':'var(--danger)'}">${t.amount}</div>
+    </div>
+  `).join('');
+}
+
+function renderCart(){
+  const el = document.getElementById('cart-items-list');
+  if(!el) return;
+  if(cartItems.length===0){
+    el.innerHTML = `<div class="empty-state"><i class="ti ti-shopping-cart"></i><h3>Keranjang Kosong</h3><p>Yuk belanja item game favoritmu!</p></div>`;
+    return;
+  }
+  el.innerHTML = cartItems.map((c,i)=>`
+    <div class="order-item" style="margin-bottom:10px;position:relative">
+      <div class="order-icon" style="font-size:28px">${c.emoji}</div>
+      <div class="order-info">
+        <div class="order-name">${c.name}</div>
+        <div class="order-meta">${c.game}</div>
+        <div class="qty-box" style="margin-top:8px;width:fit-content">
+          <button class="qty-btn" onclick="cartQty(${i},-1)">-</button>
+          <input type="number" class="qty-num" value="${c.qty}" readonly>
+          <button class="qty-btn" onclick="cartQty(${i},1)">+</button>
+        </div>
+      </div>
+      <div>
+        <div class="order-price">${fmt(c.price * c.qty)}</div>
+        <button onclick="removeCart(${i})" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;font-weight:700;margin-top:8px;display:flex;align-items:center;gap:4px">
+          <i class="ti ti-trash"></i> Hapus
+        </button>
+      </div>
+    </div>
+  `).join('');
+  updateCartTotal();
+}
+
+function updateCartTotal(){
+  const sub = cartItems.reduce((a,c)=>a+c.price*c.qty,0);
+  const disc = Math.round(sub*0.1);
+  const el1 = document.getElementById('cart-subtotal');
+  const el2 = document.getElementById('cart-total');
+  if(el1) el1.textContent = fmt(sub);
+  if(el2) el2.textContent = fmt(sub - disc);
+}
+
+// ===================== PRODUCT DETAIL =====================
+let currentProduct = null;
+function openProduct(id){
+  currentProduct = itemsData.find(i=>i.id===id);
+  if(!currentProduct) return;
+  const p = currentProduct;
+  document.getElementById('pd-img').textContent = p.emoji;
+  document.getElementById('pd-title').textContent = p.name;
+  document.getElementById('pd-rating').textContent = p.rating;
+  document.getElementById('pd-reviews').textContent = `(${p.reviews} ulasan)`;
+  document.getElementById('pd-game').textContent = p.game;
+  document.getElementById('pd-desc').textContent = p.desc;
+  document.getElementById('pd-price').textContent = (p.price/1000).toFixed(0)+'K';
+  document.getElementById('pd-original').textContent = 'Harga normal: '+fmt(p.original);
+  document.getElementById('pd-discount').textContent = p.discount>0 ? `-${p.discount}%` : '';
+  document.getElementById('pd-discount').style.display = p.discount>0 ? '' : 'none';
+  document.getElementById('pd-tags').innerHTML = ['Terverifikasi','Pengiriman Cepat','Garansi 24Jam','Stok Ready'].map(t=>`<span class="tag">${t}</span>`).join('');
+  
+  const reviews = [
+    { name:'Ahmad R.', rating:5, text:'Top banget! Cepat dan sesuai deskripsi. Seller ramah juga.', date:'10 Jun 2026' },
+    { name:'Siti N.', rating:5, text:'Recommended! Beli 2x di sini selalu puas. Fast response.', date:'9 Jun 2026' },
+    { name:'Rendi K.', rating:4, text:'Oke, tapi proses pengiriman agak lama dikit. Overall tetap bagus.', date:'8 Jun 2026' },
+  ];
+  document.getElementById('pd-reviews-list').innerHTML = reviews.map(r=>`
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">${r.name[0]}</div>
+        <div>
+          <div class="review-name">${r.name}</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            ${'<i class="ti ti-star-filled" style="color:var(--gold);font-size:13px"></i>'.repeat(r.rating)}
+          </div>
+        </div>
+        <div class="review-date" style="margin-left:auto">${r.date}</div>
+      </div>
+      <div class="review-text">${r.text}</div>
+    </div>
+  `).join('');
+  showPage('product');
+}
+
+// ===================== PAGE ROUTING =====================
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById('page-'+name);
+  if(el){ el.classList.add('active'); window.scrollTo(0,0); }
+  if(name==='browse') renderAllItems();
+  if(name==='cart') renderCart();
+  if(name==='dashboard'){ renderOrders(); renderMyListings(); renderWalletHistory(); }
+}
+
+function showModal(id){
+  const el = document.getElementById(id);
+  if(el){ el.classList.add('open'); if(id==='notif-modal') renderNotifs(); }
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+// ===================== ACTIONS =====================
+function setFilter(btn, game){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const el = document.getElementById('all-items');
+  if(!el) return;
+  const filtered = game==='Semua' ? itemsData : itemsData.filter(i=>i.game===game);
+  el.innerHTML = filtered.length ? filtered.map(i=>renderItemCard(i)).join('') :
+    `<div class="empty-state" style="grid-column:1/-1"><i class="ti ti-ghost"></i><h3>Tidak ada item</h3><p>Coba filter lain</p></div>`;
+}
+
+function filterByGame(game){
+  showPage('browse');
+  setTimeout(()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>{
+      if(b.textContent===game) b.click();
+    });
+  }, 100);
+}
+
+function sortItems(val){ showToast('Diurutkan: '+val, 'success'); }
+
+function addToCart(){
+  const qty = parseInt(document.getElementById('qty-val').value)||1;
+  if(currentProduct){
+    const existing = cartItems.find(c=>c.id===currentProduct.id);
+    if(existing) existing.qty += qty;
+    else cartItems.push({...currentProduct, qty});
+    document.getElementById('cart-count').textContent = cartItems.reduce((a,c)=>a+c.qty,0);
+    showToast('Item ditambahkan ke keranjang! 🛒', 'success');
+  }
+}
+
+function buyNow(){ addToCart(); showPage('cart'); }
+
+function changeQty(d){
+  const el = document.getElementById('qty-val');
+  const v = Math.max(1, (parseInt(el.value)||1)+d);
+  el.value = v;
+}
+
+function cartQty(i, d){
+  cartItems[i].qty = Math.max(1, cartItems[i].qty + d);
+  renderCart();
+}
+
+function removeCart(i){
+  cartItems.splice(i,1);
+  document.getElementById('cart-count').textContent = cartItems.reduce((a,c)=>a+c.qty,0);
+  renderCart();
+  showToast('Item dihapus dari keranjang', 'error');
+}
+
+function checkout(){
+  if(cartItems.length===0){ showToast('Keranjang kosong!','error'); return; }
+  showToast('🎉 Pembayaran berhasil! Cek pesanan di Dashboard.','success');
+  cartItems.length = 0;
+  document.getElementById('cart-count').textContent = '0';
+  renderCart();
+  setTimeout(()=>showPage('dashboard'), 1200);
+}
+
+function toggleWishlist(btn){
+  btn.classList.toggle('active');
+  showToast(btn.classList.contains('active')?'Ditambahkan ke wishlist ❤️':'Dihapus dari wishlist','success');
+}
+
+function submitSell(){
+  const name = document.getElementById('sell-name').value;
+  const game = document.getElementById('sell-game').value;
+  const price = document.getElementById('sell-price').value;
+  if(!name||!game||!price){ showToast('Lengkapi semua field wajib!','error'); return; }
+  showToast('✅ Iklan berhasil diposting!','success');
+  ['sell-name','sell-desc','sell-price','sell-stock'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
+}
+
+function login(){
+  closeModal('login-modal');
+  showToast('🎉 Login berhasil! Selamat datang kembali.','success');
+}
+
+function switchTab(btn, tabId){
+  btn.closest('.modal').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const ids = ['login-tab','register-tab'];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display = id===tabId?'block':'none';
+  });
+}
+
+function switchDashTab(btn, panel){
+  document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('dash-'+panel).classList.add('active');
+}
+
+function setActiveNav(btn){
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectTopup(btn, val){
+  btn.closest('.modal').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function sendChat(){
+  const input = document.getElementById('chat-input-field');
+  const val = input.value.trim();
+  if(!val) return;
+  const msgs = document.getElementById('chat-msgs');
+  const now = new Date();
+  const time = now.getHours()+'.'+String(now.getMinutes()).padStart(2,'0');
+  msgs.innerHTML += `<div class="msg mine"><div class="msg-bubble">${val}</div><div class="msg-time">${time}</div></div>`;
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(()=>{
+    const replies = ['Siap kak, ada yang bisa saya bantu lagi? 😊','Oke kak, saya cek dulu ya!','Ditunggu konfirmasinya kak! Kalau jadi beli, langsung order aja 🎮','Harga bisa nego dikit kak untuk pembelian bulk!'];
+    msgs.innerHTML += `<div class="msg theirs"><div class="msg-bubble">${replies[Math.floor(Math.random()*replies.length)]}</div><div class="msg-time">${time}</div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
+}
+
+// ===================== TOAST =====================
+function showToast(msg, type='success'){
+  const container = document.getElementById('toast-container');
+  const icons = { success:'ti-check-circle', error:'ti-alert-circle', info:'ti-info-circle' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<i class="ti ${icons[type]||icons.success}" style="font-size:18px"></i>${msg}`;
+  container.appendChild(toast);
+  setTimeout(()=>toast.remove(), 3000);
+}
+
+// ===================== INIT =====================
+renderCategories();
+renderHotItems();
+renderSellers();
+</script>
+</body>
+</html>
